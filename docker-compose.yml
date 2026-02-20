@@ -1,0 +1,14 @@
+services:
+  startpage:
+    build: .
+    ports:
+      - "9999:9999"
+    volumes:
+      - ${OBSIDIAN_VAULT_PATH:-/Users/ethanjeong/Documents/Obsidian Vault}:/data
+    env_file:
+      - .env
+    environment:
+      # Override host paths with container paths
+      OBSIDIAN_VAULT_PATH: /data
+      DATA_DIR: /data
+    restart: unless-stopped

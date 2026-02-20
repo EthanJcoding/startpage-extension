@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        deep: 'rgb(var(--c-deep) / <alpha-value>)',
+        base: 'rgb(var(--c-base) / <alpha-value>)',
+        card: 'rgb(var(--c-card) / <alpha-value>)',
+        'card-hover': 'rgb(var(--c-card-hover) / <alpha-value>)',
+        input: 'rgb(var(--c-input) / <alpha-value>)',
+        border: 'rgb(var(--c-border) / <alpha-value>)',
+        'border-h': 'rgb(var(--c-border-h) / <alpha-value>)',
+        accent: 'rgb(var(--c-accent) / <alpha-value>)',
+        'accent-dim': 'rgb(var(--c-accent-dim) / <alpha-value>)',
+        'accent-glow': 'rgb(var(--c-accent) / 0.03)',
+        'accent-h': 'rgb(var(--c-accent-h) / <alpha-value>)',
+        blu: 'rgb(var(--c-blu) / <alpha-value>)',
+        'blu-dim': 'rgb(var(--c-blu-dim) / <alpha-value>)',
+        'blu-h': 'rgb(var(--c-blu-h) / <alpha-value>)',
+        grn: 'rgb(var(--c-grn) / <alpha-value>)',
+        'grn-dim': 'rgb(var(--c-grn-dim) / <alpha-value>)',
+        org: 'rgb(var(--c-org) / <alpha-value>)',
+        'org-dim': 'rgb(var(--c-org-dim) / <alpha-value>)',
+        'org-h': 'rgb(var(--c-org-h) / <alpha-value>)',
+        yel: 'rgb(var(--c-yel) / <alpha-value>)',
+        'yel-dim': 'rgb(var(--c-yel-dim) / <alpha-value>)',
+        gry: 'rgb(var(--c-gry) / <alpha-value>)',
+        'gry-dim': 'rgb(var(--c-gry-dim) / <alpha-value>)',
+        'txt-primary': 'rgb(var(--c-txt-primary) / <alpha-value>)',
+        'txt-secondary': 'rgb(var(--c-txt-secondary) / <alpha-value>)',
+        'txt-tertiary': 'rgb(var(--c-txt-tertiary) / <alpha-value>)',
+      },
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'system-ui', 'sans-serif'],
+      },
+      animation: {
+        shimmer: 'shimmer 1.5s infinite',
+        fadeUp1: 'fadeUp .5s cubic-bezier(.4,0,.2,1) .05s forwards',
+        fadeUp2: 'fadeUp .5s cubic-bezier(.4,0,.2,1) .12s forwards',
+        fadeUp3: 'fadeUp .5s cubic-bezier(.4,0,.2,1) .2s forwards',
+        fadeUp4: 'fadeUp .5s cubic-bezier(.4,0,.2,1) .28s forwards',
+      },
+      keyframes: {
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
+        fadeUp: {
+          from: { opacity: '0', transform: 'translateY(12px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+    },
+  },
+}
+</script>
+<style>
+  :root{
+    --c-deep:245 244 240;--c-base:238 237 234;--c-card:255 255 255;
+    --c-card-hover:249 248 245;--c-input:242 241 237;
+    --c-border:229 227 221;--c-border-h:213 211 204;
+    --c-accent:196 77 88;--c-accent-dim:252 232 235;--c-accent-h:168 64 77;
+    --c-blu:74 122 172;--c-blu-dim:234 241 248;--c-blu-h:61 104 149;
+    --c-grn:58 148 100;--c-grn-dim:232 244 238;
+    --c-org:196 138 53;--c-org-dim:250 242 228;--c-org-h:212 135 26;
+    --c-yel:176 144 48;--c-yel-dim:248 244 228;
+    --c-gry:140 140 158;--c-gry-dim:240 240 244;
+    --c-txt-primary:28 28 40;--c-txt-secondary:107 106 120;--c-txt-tertiary:165 164 178;
+  }
+  .dark{
+    --c-deep:17 17 21;--c-base:26 26 32;--c-card:28 28 36;
+    --c-card-hover:36 36 46;--c-input:32 32 42;
+    --c-border:44 44 56;--c-border-h:58 58 72;
+    --c-accent:196 77 88;--c-accent-dim:58 32 40;--c-accent-h:216 93 104;
+    --c-blu:90 138 190;--c-blu-dim:26 40 56;--c-blu-h:110 158 210;
+    --c-grn:74 168 116;--c-grn-dim:26 48 40;
+    --c-org:212 154 69;--c-org-dim:48 40 24;--c-org-h:228 170 85;
+    --c-yel:192 160 64;--c-yel-dim:44 40 24;
+    --c-gry:140 140 158;--c-gry-dim:36 36 46;
+    --c-txt-primary:228 228 236;--c-txt-secondary:152 152 168;--c-txt-tertiary:88 88 104;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  html{font-size:15px}
+  body::before{
+    content:"";position:fixed;inset:0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%,rgb(var(--c-accent)/.02) 0%,transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 90%,rgb(var(--c-blu)/.02) 0%,transparent 60%),
+      radial-gradient(ellipse 100% 80% at 50% 50%,rgb(var(--c-border)/.03) 0%,transparent 70%);
+    pointer-events:none;z-index:0;
+  }
+  .glow-top::after{
+    content:"";position:absolute;
+    top:-1px;left:40px;right:40px;height:1px;
+    background:linear-gradient(90deg,transparent,rgb(var(--c-accent)/.09),transparent);
+  }
+  .glow-top-blue::after{
+    content:"";position:absolute;
+    top:-1px;left:30px;right:30px;height:1px;
+    background:linear-gradient(90deg,transparent,rgb(var(--c-blu)/.08),transparent);
+  }
+  .glow-bottom::after{
+    content:"";position:absolute;
+    bottom:-1px;left:30px;right:30px;height:1px;
+    background:linear-gradient(90deg,transparent,rgb(var(--c-border)),transparent);
+  }
+  .skel{
+    background:linear-gradient(90deg,rgb(var(--c-input)) 25%,rgb(var(--c-border)) 50%,rgb(var(--c-input)) 75%);
+    background-size:200% 100%;
+  }
+  .scroll-area::-webkit-scrollbar{width:4px}
+  .scroll-area::-webkit-scrollbar-track{background:transparent}
+  .scroll-area::-webkit-scrollbar-thumb{background:rgb(var(--c-border-h));border-radius:4px}
+  .scroll-area::-webkit-scrollbar-thumb:hover{background:rgb(var(--c-gry))}
+</style>
+<script>
+(function(){var s=localStorage.getItem('darkMode');var d=s!==null?s==='true':window.matchMedia('(prefers-color-scheme:dark)').matches;if(d)document.documentElement.classList.add('dark')})();
+</script>
+</head>
+<body class="font-sans bg-deep text-txt-primary h-screen antialiased overflow-hidden">
+
+<!-- Check-in Overlay -->
+<div id="checkInOverlay" class="fixed inset-0 z-50 hidden items-center justify-center" style="background:rgba(28,28,40,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)">
+  <div class="bg-card border border-border rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,.12)] px-10 py-9 flex flex-col items-center gap-5 max-w-[360px] text-center">
+    <div class="w-12 h-12 rounded-full bg-blu-dim text-blu flex items-center justify-center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div>
+      <div class="text-[1.15rem] font-semibold text-txt-primary mb-1">출근 기록</div>
+      <div class="text-[.88rem] text-txt-secondary leading-relaxed">오늘 하루를 시작해볼까요?<br>출근 시간을 기록하고 시작하세요.</div>
+    </div>
+    <button id="overlayCheckInBtn" class="w-full bg-blu text-white border-none px-6 py-3 rounded-xl text-[.92rem] font-semibold cursor-pointer transition-all duration-200 font-sans hover:bg-blu-h hover:-translate-y-px active:translate-y-0">출근 기록하기</button>
+    <button id="overlaySkipBtn" class="text-[.8rem] text-txt-tertiary bg-transparent border-none cursor-pointer font-sans transition-colors duration-200 hover:text-txt-secondary">건너뛰기</button>
+  </div>
+</div>
+
+<div class="relative z-[1] max-w-[1560px] mx-auto px-14 py-10 h-screen flex flex-col">
+
+  <!-- Top Row -->
+  <div class="flex items-stretch gap-7 mb-7 shrink-0 opacity-0 animate-fadeUp1">
+
+    <!-- Date + Weather Block -->
+    <div class="glow-top flex-1 flex items-stretch px-11 py-9 bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] relative overflow-hidden">
+      <!-- Left: Clock -->
+      <div class="flex-1 flex flex-col justify-center">
+        <div class="flex items-center gap-3">
+          <div id="dateMain" class="text-[2.4rem] font-bold tracking-tight leading-tight text-txt-primary"></div>
+          <div class="flex items-center gap-1">
+            <button class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__openLunchModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+            </button>
+            <button class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__openHistoryModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </button>
+            <button id="weatherRefresh" class="hidden w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__refreshWeather()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115.36-6.36L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15.36 6.36L3 16"/></svg>
+            </button>
+            <button id="darkModeToggle" class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__toggleDarkMode()">
+              <svg id="darkModeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="mt-1.5 flex items-center gap-2">
+          <span id="dateSub" class="text-[1.05rem] text-txt-secondary font-normal tracking-wide"></span>
+          <span id="weatherInline" class="text-[1.05rem] text-txt-secondary font-normal"></span>
+        </div>
+        <div id="timeDisplay" class="mt-4 text-[3.6rem] font-extralight tracking-widest text-txt-tertiary tabular-nums"></div>
+        <div id="workTimeSection" class="mt-3 flex items-center gap-2.5">
+          <button id="checkInBtn" class="text-[.82rem] text-txt-tertiary bg-input border border-border px-3.5 py-1.5 rounded-lg cursor-pointer font-sans transition-all duration-200 hover:text-blu hover:border-blu" onclick="window.__checkIn()">출근 기록</button>
+          <div id="workTimeInfo" style="display:none" class="flex items-center gap-2 text-[.9rem]">
+            <span class="text-txt-tertiary text-[.8rem]">출근</span>
+            <span id="checkInTime" class="text-txt-primary font-medium tabular-nums"></span>
+            <span class="text-txt-tertiary text-[.8rem]">→ 퇴근</span>
+            <span id="checkOutTime" class="text-txt-primary font-medium tabular-nums"></span>
+            <span class="text-txt-tertiary mx-0.5">·</span>
+            <span id="remainingTime" class="text-blu font-medium text-[.85rem]"></span>
+            <button class="w-5 h-5 border-none bg-transparent text-txt-tertiary cursor-pointer rounded flex items-center justify-center transition-all duration-200 hover:text-accent" onclick="window.__resetCheckIn()">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="weatherError" class="hidden text-accent text-[.85rem] mt-3"></div>
+      </div>
+      <!-- Right: 7-day Forecast (vertical) -->
+      <div id="weatherForecast" class="hidden pl-8 ml-8 border-l border-border flex flex-col justify-center"></div>
+    </div>
+
+    <!-- Pomodoro Timer Block -->
+    <div class="glow-top-blue flex-none w-[320px] px-8 py-8 bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] flex flex-col items-center justify-center relative overflow-hidden">
+      <div class="text-[.78rem] text-txt-tertiary font-medium tracking-widest uppercase mb-4">Pomodoro</div>
+      <div class="relative">
+        <svg id="pomodoroRing" width="140" height="140" viewBox="0 0 140 140" class="block -rotate-90">
+          <circle cx="70" cy="70" r="62" fill="none" stroke="var(--color-border)" stroke-width="5"/>
+          <circle id="pomodoroProgress" cx="70" cy="70" r="62" fill="none" stroke="var(--color-accent)" stroke-width="5" stroke-linecap="round" stroke-dasharray="389.56" stroke-dashoffset="0" class="transition-all duration-500"/>
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <div id="pomodoroTime" class="text-[2.2rem] font-light tabular-nums tracking-wide text-txt-primary">15:00</div>
+          <div id="pomodoroLabel" class="text-[.72rem] text-txt-tertiary mt-0.5">집중</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 mt-5">
+        <button id="pomodoroStartBtn" class="bg-accent text-white border-none px-5 py-2 rounded-lg text-[.82rem] font-semibold cursor-pointer transition-all duration-200 font-sans hover:bg-accent-h hover:-translate-y-px active:translate-y-0" onclick="window.__pomodoroToggle()">시작</button>
+        <button id="pomodoroResetBtn" class="bg-input text-txt-secondary border border-border px-3.5 py-2 rounded-lg text-[.82rem] font-medium cursor-pointer transition-all duration-200 font-sans hover:text-txt-primary hover:border-border-h" onclick="window.__pomodoroReset()">리셋</button>
+      </div>
+      <div class="mt-4 flex items-center gap-1.5" id="pomodoroSessions">
+        <span id="pomodoroCount" class="text-[.75rem] text-txt-tertiary">0회 완료</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="grid grid-cols-2 gap-7 flex-1 min-h-0">
+
+    <!-- Todo Card -->
+    <div class="glow-bottom bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] px-8 py-7 relative overflow-hidden opacity-0 animate-fadeUp2 flex flex-col">
+      <div class="flex items-center justify-between mb-5">
+        <div class="text-[1.05rem] font-semibold tracking-wide flex items-center gap-2.5">
+          <span class="w-5 h-5 flex items-center justify-center text-txt-tertiary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </span>
+          할 일
+        </div>
+        <span id="todoCount" class="text-xs text-txt-tertiary bg-input px-2.5 py-0.5 rounded-full font-medium border border-border">0</span>
+      </div>
+
+      <div class="flex gap-2.5 mb-5">
+        <input type="text" id="todoInput" placeholder="새로운 할 일..." autocomplete="off"
+          class="flex-1 bg-input border border-border rounded-lg px-4 py-2.5 text-txt-primary text-[.9rem] font-sans outline-none transition-colors duration-200 placeholder:text-txt-tertiary focus:border-accent">
+        <div id="todoTimeInput" class="inline-flex items-center bg-input border border-border rounded-lg px-3 py-2.5 gap-0 transition-colors duration-200 focus-within:border-accent">
+          <input type="text" id="todoTimeHH" inputmode="numeric" maxlength="2" placeholder="H" autocomplete="off"
+            class="w-[22px] bg-transparent border-0 outline-none text-[.85rem] font-medium tabular-nums text-txt-primary text-center p-0 leading-normal placeholder:text-txt-tertiary/50 caret-accent">
+          <span class="text-txt-tertiary text-[.85rem] select-none leading-normal">:</span>
+          <input type="text" id="todoTimeMM" inputmode="numeric" maxlength="2" placeholder="M" autocomplete="off"
+            class="w-[22px] bg-transparent border-0 outline-none text-[.85rem] font-medium tabular-nums text-txt-primary text-center p-0 leading-normal placeholder:text-txt-tertiary/50 caret-accent">
+          <button id="todoTimeClear" class="ml-1.5 w-4 h-4 border-none bg-transparent text-txt-tertiary cursor-pointer rounded flex items-center justify-center transition-all duration-200 text-[9px] p-0 hover:text-accent hidden">✕</button>
+        </div>
+        <button id="todoAddBtn"
+          class="bg-accent text-white border-none px-5 py-2.5 rounded-lg text-[.85rem] font-semibold cursor-pointer transition-all duration-200 whitespace-nowrap font-sans hover:bg-accent-h hover:-translate-y-px active:translate-y-0">
+          추가
+        </button>
+      </div>
+
+      <div id="todoContent" class="scroll-area flex-1 min-h-0 overflow-y-auto -mx-2 px-2">
+        <div id="todoLoading" class="flex flex-col gap-2.5 py-2">
+          <div class="flex items-center gap-3 px-3.5 py-3"><div class="skel animate-shimmer w-2 h-2 rounded-full"></div><div class="skel animate-shimmer h-3 rounded flex-1"></div></div>
+          <div class="flex items-center gap-3 px-3.5 py-3"><div class="skel animate-shimmer w-2 h-2 rounded-full"></div><div class="skel animate-shimmer h-3 rounded flex-1"></div></div>
+          <div class="flex items-center gap-3 px-3.5 py-3"><div class="skel animate-shimmer w-2 h-2 rounded-full"></div><div class="skel animate-shimmer h-3 rounded flex-1"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dev Card (Jira + GitHub PR) -->
+    <div class="glow-bottom bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] px-8 py-7 relative overflow-hidden opacity-0 animate-fadeUp3 flex flex-col">
+      <div class="flex items-center justify-between mb-5">
+        <div class="text-[1.05rem] font-semibold tracking-wide flex items-center gap-2.5">
+          <span class="w-5 h-5 flex items-center justify-center text-txt-tertiary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 3v18"/></svg>
+          </span>
+          Dev
+        </div>
+        <span id="devCount" class="text-xs text-txt-tertiary bg-input px-2.5 py-0.5 rounded-full font-medium border border-border">0</span>
+      </div>
+
+      <div id="devTabs" class="flex gap-0.5 bg-input rounded-lg p-[3px] border border-border">
+        <button class="dev-tab flex-1 py-2 px-4 border-none bg-transparent text-txt-tertiary text-[.82rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans active" data-tab="jira">Jira</button>
+        <button class="dev-tab flex-1 py-2 px-4 border-none bg-transparent text-txt-tertiary text-[.82rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-tab="my-pr">내 PR</button>
+        <button class="dev-tab flex-1 py-2 px-4 border-none bg-transparent text-txt-tertiary text-[.82rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-tab="all-pr">전체 PR</button>
+      </div>
+
+      <div id="devContent" class="scroll-area flex-1 min-h-0 overflow-y-auto -mx-2 px-2 mt-4">
+        <div id="devLoading" class="flex flex-col gap-2.5 py-2">
+          <div class="flex items-center gap-3 px-3.5 py-3"><div class="skel animate-shimmer h-3 rounded w-[70px]"></div><div class="skel animate-shimmer h-3 rounded flex-1"></div></div>
+          <div class="flex items-center gap-3 px-3.5 py-3"><div class="skel animate-shimmer h-3 rounded w-[70px]"></div><div class="skel animate-shimmer h-3 rounded flex-1"></div></div>
+          <div class="flex items-center gap-3 px-3.5 py-3"><div class="skel animate-shimmer h-3 rounded w-[70px]"></div><div class="skel animate-shimmer h-3 rounded flex-1"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lunch Modal -->
+<div id="lunchBackdrop" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center backdrop-blur-sm" onclick="if(event.target===this)window.__closeLunchModal()">
+  <div class="bg-card border border-border rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,.12)] w-[480px] h-[70vh] flex flex-col overflow-hidden">
+    <!-- Header -->
+    <div class="px-7 pt-5 pb-4 border-b border-border">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-[1.1rem] font-semibold tracking-wide">점심 추천</span>
+        <button class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__closeLunchModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="lunchTabs" class="flex gap-0.5 bg-input rounded-lg p-[3px] border border-border">
+        <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans active" data-cat="한식">한식</button>
+        <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-cat="중식">중식</button>
+        <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-cat="일식">일식</button>
+        <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-cat="양식">양식</button>
+        <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-cat="분식">분식</button>
+        <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-cat="카페">카페</button>
+        <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-cat="맛집">맛집</button>
+      </div>
+    </div>
+    <!-- Body -->
+    <div id="lunchBody" class="flex-1 min-h-0 overflow-y-auto scroll-area px-7 py-4">
+      <div id="lunchLoading" class="flex flex-col gap-3 py-2">
+        <div class="flex items-center gap-3 px-2 py-3"><div class="skel animate-shimmer h-3.5 rounded flex-1"></div></div>
+        <div class="flex items-center gap-3 px-2 py-3"><div class="skel animate-shimmer h-3.5 rounded flex-1"></div></div>
+        <div class="flex items-center gap-3 px-2 py-3"><div class="skel animate-shimmer h-3.5 rounded flex-1"></div></div>
+        <div class="flex items-center gap-3 px-2 py-3"><div class="skel animate-shimmer h-3.5 rounded flex-1"></div></div>
+      </div>
+      <div id="lunchList" class="hidden"></div>
+      <div id="lunchEmpty" class="hidden text-center py-8 px-5 text-txt-tertiary text-[.88rem] leading-relaxed">
+        <span class="text-[1.6rem] mb-2 block opacity-50">🍽</span>검색 결과가 없습니다
+      </div>
+      <div id="lunchError" class="hidden text-center py-6 px-5 text-accent text-[.85rem]">
+        추천 정보를 불러올 수 없습니다
+      </div>
+    </div>
+    <!-- Footer -->
+    <div class="flex items-center justify-between px-7 py-4 border-t border-border">
+      <div class="flex items-center gap-3">
+        <span class="text-[.75rem] text-txt-tertiary">성수역 반경 1km</span>
+        <button id="lunchHiddenBtn" style="display:none" class="text-[.72rem] font-medium text-txt-tertiary bg-input px-2 py-0.5 rounded-full border border-border cursor-pointer transition-all duration-200 hover:text-txt-secondary hover:border-border-h font-sans" onclick="window.__toggleHiddenView()"></button>
+      </div>
+      <div>
+        <button id="lunchRandomBtn" class="bg-org text-white border-none px-4 py-2 rounded-lg text-[.82rem] font-semibold cursor-pointer transition-all duration-200 font-sans hover:bg-org-h hover:-translate-y-px active:translate-y-0 mr-2" onclick="window.__randomLunchPick()">랜덤</button>
+        <button id="lunchRefreshBtn" class="bg-accent text-white border-none px-4 py-2 rounded-lg text-[.82rem] font-semibold cursor-pointer transition-all duration-200 font-sans hover:bg-accent-h hover:-translate-y-px active:translate-y-0" onclick="window.__rerollLunch()">새로고침</button>
+        <button id="lunchBackBtn" style="display:none" class="bg-card-hover text-txt-secondary border border-border px-4 py-2 rounded-lg text-[.82rem] font-semibold cursor-pointer transition-all duration-200 font-sans hover:text-txt-primary hover:border-border-h" onclick="window.__toggleHiddenView()">돌아가기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- History Modal -->
+<div id="historyBackdrop" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center backdrop-blur-sm" onclick="if(event.target===this)window.__closeHistoryModal()">
+  <div class="bg-card border border-border rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,.12)] w-[480px] h-[70vh] flex flex-col overflow-hidden">
+    <div class="px-7 pt-5 pb-4 border-b border-border">
+      <div class="flex items-center justify-between">
+        <span class="text-[1.1rem] font-semibold tracking-wide">할 일 기록</span>
+        <button class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__closeHistoryModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="historyBody" class="flex-1 min-h-0 overflow-y-auto scroll-area px-7 py-4">
+      <div id="historyLoading" class="flex flex-col gap-2.5 py-2">
+        <div class="flex items-center gap-3 px-2 py-3"><div class="skel animate-shimmer h-3.5 rounded flex-1"></div></div>
+        <div class="flex items-center gap-3 px-2 py-3"><div class="skel animate-shimmer h-3.5 rounded flex-1"></div></div>
+        <div class="flex items-center gap-3 px-2 py-3"><div class="skel animate-shimmer h-3.5 rounded flex-1"></div></div>
+      </div>
+      <div id="historyContent" class="hidden"></div>
+      <div id="historyEmpty" class="hidden text-center py-8 px-5 text-txt-tertiary text-[.88rem] leading-relaxed">기록이 없습니다</div>
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/clock.js"></script>
+<script src="js/weather.js"></script>
+<script src="js/pomodoro.js"></script>
+<script src="js/todo.js"></script>
+<script src="js/dev.js"></script>
+<script src="js/lunch.js"></script>
+<script src="js/history.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
