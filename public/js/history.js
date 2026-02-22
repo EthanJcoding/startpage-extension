@@ -4,6 +4,11 @@
   var DAYS = ['일', '월', '화', '수', '목', '금', '토'];
   var historyData = [];
   var currentDateView = null;
+  var lastFocusedHistory = null;
+
+  function isHistoryModalOpen() {
+    return !document.getElementById('historyBackdrop').classList.contains('hidden');
+  }
 
   function escText(t) { return esc(t.replace(/'/g, "\\'")); }
 
@@ -101,8 +106,12 @@
 
   window.__openHistoryModal = async function() {
     currentDateView = null;
+    lastFocusedHistory = document.activeElement;
     var backdrop = document.getElementById('historyBackdrop');
-    backdrop.style.display = 'flex';
+    backdrop.classList.remove('hidden');
+    backdrop.classList.add('flex');
+    var modal = document.getElementById('historyModal');
+    if (modal) modal.focus();
     document.getElementById('historyLoading').classList.remove('hidden');
     document.getElementById('historyContent').classList.add('hidden');
     document.getElementById('historyEmpty').classList.add('hidden');
@@ -117,8 +126,37 @@
   };
 
   window.__closeHistoryModal = function() {
-    document.getElementById('historyBackdrop').style.display = 'none';
+    var backdrop = document.getElementById('historyBackdrop');
+    backdrop.classList.add('hidden');
+    backdrop.classList.remove('flex');
+    if (lastFocusedHistory && lastFocusedHistory.focus) lastFocusedHistory.focus();
   };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && isHistoryModalOpen()) {
+      window.__closeHistoryModal();
+    }
+
+    if (e.key === 'Tab' && isHistoryModalOpen()) {
+      var modal = document.getElementById('historyModal');
+      if (!modal) return;
+      var nodes = modal.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
+      var focusables = [];
+      for (var i = 0; i < nodes.length; i++) {
+        if (!nodes[i].disabled && nodes[i].offsetParent !== null) focusables.push(nodes[i]);
+      }
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  });
 
   window.__viewHistoryDate = async function(date) {
     currentDateView = date;

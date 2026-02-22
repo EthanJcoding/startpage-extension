@@ -124,7 +124,7 @@ tailwind.config = {
 (function(){var s=localStorage.getItem('darkMode');var d=s!==null?s==='true':window.matchMedia('(prefers-color-scheme:dark)').matches;if(d)document.documentElement.classList.add('dark')})();
 </script>
 </head>
-<body class="font-sans bg-deep text-txt-primary h-screen antialiased overflow-hidden">
+<body class="font-sans bg-deep text-txt-primary min-h-screen antialiased overflow-x-hidden overflow-y-auto lg:h-screen lg:overflow-hidden">
 
 <!-- Check-in Overlay -->
 <div id="checkInOverlay" class="fixed inset-0 z-50 hidden items-center justify-center" style="background:rgba(28,28,40,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)">
@@ -141,28 +141,28 @@ tailwind.config = {
   </div>
 </div>
 
-<div class="relative z-[1] max-w-[1560px] mx-auto px-14 py-10 h-screen flex flex-col">
+<div class="relative z-[1] max-w-[1560px] mx-auto px-4 sm:px-8 lg:px-14 py-5 sm:py-7 lg:py-10 min-h-screen lg:h-screen flex flex-col gap-5 lg:gap-0">
 
   <!-- Top Row -->
-  <div class="flex items-stretch gap-7 mb-7 shrink-0 opacity-0 animate-fadeUp1">
+  <div class="flex flex-col xl:flex-row items-stretch gap-5 lg:gap-7 mb-0 lg:mb-7 shrink-0 opacity-0 animate-fadeUp1">
 
     <!-- Date + Weather Block -->
-    <div class="glow-top flex-1 flex items-stretch px-11 py-9 bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] relative overflow-hidden">
+    <div class="glow-top flex-1 flex flex-col lg:flex-row items-stretch px-5 sm:px-8 lg:px-11 py-6 lg:py-9 bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] relative overflow-hidden">
       <!-- Left: Clock -->
       <div class="flex-1 flex flex-col justify-center">
         <div class="flex items-center gap-3">
           <div id="dateMain" class="text-[2.4rem] font-bold tracking-tight leading-tight text-txt-primary"></div>
           <div class="flex items-center gap-1">
-            <button class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__openLunchModal()">
+            <button type="button" aria-label="점심 추천 열기" class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__openLunchModal()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
             </button>
-            <button class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__openHistoryModal()">
+            <button type="button" aria-label="할 일 기록 열기" class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__openHistoryModal()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </button>
-            <button id="weatherRefresh" class="hidden w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__refreshWeather()">
+            <button type="button" id="weatherRefresh" aria-label="날씨 새로고침" class="hidden w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__refreshWeather()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0115.36-6.36L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 01-15.36 6.36L3 16"/></svg>
             </button>
-            <button id="darkModeToggle" class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__toggleDarkMode()">
+            <button type="button" id="darkModeToggle" aria-label="다크 모드 전환" class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__toggleDarkMode()">
               <svg id="darkModeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
             </button>
           </div>
@@ -189,11 +189,11 @@ tailwind.config = {
         <div id="weatherError" class="hidden text-accent text-[.85rem] mt-3"></div>
       </div>
       <!-- Right: 7-day Forecast (vertical) -->
-      <div id="weatherForecast" class="hidden pl-8 ml-8 border-l border-border flex flex-col justify-center"></div>
+      <div id="weatherForecast" class="hidden mt-5 lg:mt-0 lg:pl-8 lg:ml-8 lg:border-l border-border flex flex-col justify-center"></div>
     </div>
 
     <!-- Pomodoro Timer Block -->
-    <div class="glow-top-blue flex-none w-[320px] px-8 py-8 bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] flex flex-col items-center justify-center relative overflow-hidden">
+    <div class="glow-top-blue flex-none w-full xl:w-[320px] px-6 sm:px-8 py-7 sm:py-8 bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] flex flex-col items-center justify-center relative overflow-hidden">
       <div class="text-[.78rem] text-txt-tertiary font-medium tracking-widest uppercase mb-4">Pomodoro</div>
       <div class="relative">
         <svg id="pomodoroRing" width="140" height="140" viewBox="0 0 140 140" class="block -rotate-90">
@@ -216,10 +216,10 @@ tailwind.config = {
   </div>
 
   <!-- Main Grid -->
-  <div class="grid grid-cols-2 gap-7 flex-1 min-h-0">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-7 flex-1 min-h-0">
 
     <!-- Todo Card -->
-    <div class="glow-bottom bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] px-8 py-7 relative overflow-hidden opacity-0 animate-fadeUp2 flex flex-col">
+    <div class="glow-bottom bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] px-5 sm:px-8 py-6 sm:py-7 relative overflow-hidden opacity-0 animate-fadeUp2 flex flex-col min-h-[360px] lg:min-h-0">
       <div class="flex items-center justify-between mb-5">
         <div class="text-[1.05rem] font-semibold tracking-wide flex items-center gap-2.5">
           <span class="w-5 h-5 flex items-center justify-center text-txt-tertiary">
@@ -257,7 +257,7 @@ tailwind.config = {
     </div>
 
     <!-- Dev Card (Jira + GitHub PR) -->
-    <div class="glow-bottom bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] px-8 py-7 relative overflow-hidden opacity-0 animate-fadeUp3 flex flex-col">
+    <div class="glow-bottom bg-card border border-border rounded-[14px] shadow-[0_2px_16px_rgba(0,0,0,.06),0_1px_2px_rgba(0,0,0,.03)] px-5 sm:px-8 py-6 sm:py-7 relative overflow-hidden opacity-0 animate-fadeUp3 flex flex-col min-h-[360px] lg:min-h-0">
       <div class="flex items-center justify-between mb-5">
         <div class="text-[1.05rem] font-semibold tracking-wide flex items-center gap-2.5">
           <span class="w-5 h-5 flex items-center justify-center text-txt-tertiary">
@@ -287,17 +287,17 @@ tailwind.config = {
 </div>
 
 <!-- Lunch Modal -->
-<div id="lunchBackdrop" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center backdrop-blur-sm" onclick="if(event.target===this)window.__closeLunchModal()">
-  <div class="bg-card border border-border rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,.12)] w-[480px] h-[70vh] flex flex-col overflow-hidden">
+<div id="lunchBackdrop" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center backdrop-blur-sm p-3 sm:p-5" onclick="if(event.target===this)window.__closeLunchModal()">
+  <div id="lunchModal" role="dialog" aria-modal="true" aria-labelledby="lunchModalTitle" tabindex="-1" class="bg-card border border-border rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,.12)] w-full max-w-[560px] h-[80vh] max-h-[700px] flex flex-col overflow-hidden">
     <!-- Header -->
     <div class="px-7 pt-5 pb-4 border-b border-border">
       <div class="flex items-center justify-between mb-4">
-        <span class="text-[1.1rem] font-semibold tracking-wide">점심 추천</span>
-        <button class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__closeLunchModal()">
+        <span id="lunchModalTitle" class="text-[1.1rem] font-semibold tracking-wide">점심 추천</span>
+        <button type="button" aria-label="점심 추천 닫기" class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__closeLunchModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
         </button>
       </div>
-      <div id="lunchTabs" class="flex gap-0.5 bg-input rounded-lg p-[3px] border border-border">
+      <div id="lunchTabs" class="grid grid-cols-4 sm:grid-cols-7 gap-0.5 bg-input rounded-lg p-[3px] border border-border">
         <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans active" data-cat="한식">한식</button>
         <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-cat="중식">중식</button>
         <button class="lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans" data-cat="일식">일식</button>
@@ -324,12 +324,12 @@ tailwind.config = {
       </div>
     </div>
     <!-- Footer -->
-    <div class="flex items-center justify-between px-7 py-4 border-t border-border">
-      <div class="flex items-center gap-3">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 sm:px-7 py-4 border-t border-border">
+      <div class="flex items-center gap-3 flex-wrap">
         <span class="text-[.75rem] text-txt-tertiary">성수역 반경 1km</span>
         <button id="lunchHiddenBtn" style="display:none" class="text-[.72rem] font-medium text-txt-tertiary bg-input px-2 py-0.5 rounded-full border border-border cursor-pointer transition-all duration-200 hover:text-txt-secondary hover:border-border-h font-sans" onclick="window.__toggleHiddenView()"></button>
       </div>
-      <div>
+      <div class="w-full sm:w-auto flex gap-2 sm:block">
         <button id="lunchRandomBtn" class="bg-org text-white border-none px-4 py-2 rounded-lg text-[.82rem] font-semibold cursor-pointer transition-all duration-200 font-sans hover:bg-org-h hover:-translate-y-px active:translate-y-0 mr-2" onclick="window.__randomLunchPick()">랜덤</button>
         <button id="lunchRefreshBtn" class="bg-accent text-white border-none px-4 py-2 rounded-lg text-[.82rem] font-semibold cursor-pointer transition-all duration-200 font-sans hover:bg-accent-h hover:-translate-y-px active:translate-y-0" onclick="window.__rerollLunch()">새로고침</button>
         <button id="lunchBackBtn" style="display:none" class="bg-card-hover text-txt-secondary border border-border px-4 py-2 rounded-lg text-[.82rem] font-semibold cursor-pointer transition-all duration-200 font-sans hover:text-txt-primary hover:border-border-h" onclick="window.__toggleHiddenView()">돌아가기</button>
@@ -339,12 +339,12 @@ tailwind.config = {
 </div>
 
 <!-- History Modal -->
-<div id="historyBackdrop" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center backdrop-blur-sm" onclick="if(event.target===this)window.__closeHistoryModal()">
-  <div class="bg-card border border-border rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,.12)] w-[480px] h-[70vh] flex flex-col overflow-hidden">
+<div id="historyBackdrop" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center backdrop-blur-sm p-3 sm:p-5" onclick="if(event.target===this)window.__closeHistoryModal()">
+  <div id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle" tabindex="-1" class="bg-card border border-border rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,.12)] w-full max-w-[560px] h-[80vh] max-h-[700px] flex flex-col overflow-hidden">
     <div class="px-7 pt-5 pb-4 border-b border-border">
       <div class="flex items-center justify-between">
-        <span class="text-[1.1rem] font-semibold tracking-wide">할 일 기록</span>
-        <button class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__closeHistoryModal()">
+        <span id="historyModalTitle" class="text-[1.1rem] font-semibold tracking-wide">할 일 기록</span>
+        <button type="button" aria-label="할 일 기록 닫기" class="w-7 h-7 border-none bg-transparent text-txt-tertiary cursor-pointer rounded-md flex items-center justify-center transition-all duration-200 hover:text-txt-secondary hover:bg-card-hover" onclick="window.__closeHistoryModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
         </button>
       </div>
