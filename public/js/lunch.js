@@ -369,20 +369,35 @@
     loadLunchRecommend(cat);
   });
 
+  var lastFocusedLunch = null;
+
+  function isLunchModalOpen() {
+    var backdrop = document.getElementById('lunchBackdrop');
+    return backdrop.style.display === 'flex' || !backdrop.classList.contains('hidden');
+  }
+
   window.__openLunchModal = function() {
+    lastFocusedLunch = document.activeElement;
     showingHidden = false;
     document.getElementById('lunchRefreshBtn').style.display = 'inline-block';
     document.getElementById('lunchRandomBtn').style.display = 'inline-block';
     document.getElementById('lunchBackBtn').style.display = 'none';
     document.getElementById('lunchTabs').style.opacity = '1';
     document.getElementById('lunchTabs').style.pointerEvents = 'auto';
-    document.getElementById('lunchBackdrop').style.display = 'flex';
+    var backdrop = document.getElementById('lunchBackdrop');
+    backdrop.style.display = 'flex';
+    backdrop.classList.remove('hidden');
+    var modal = document.getElementById('lunchModal');
+    if (modal) modal.focus();
     updateLunchTabStyles();
     Promise.all([loadLunchReviews(), loadLunchHidden()]).then(function() { loadLunchRecommend(currentLunchCat); });
   };
 
   window.__closeLunchModal = function() {
-    document.getElementById('lunchBackdrop').style.display = 'none';
+    var backdrop = document.getElementById('lunchBackdrop');
+    backdrop.style.display = 'none';
+    backdrop.classList.add('hidden');
+    if (lastFocusedLunch && lastFocusedLunch.focus) lastFocusedLunch.focus();
   };
 
   var randomCategories = ['한식', '중식', '일식', '양식', '분식'];
@@ -510,8 +525,29 @@
   };
 
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.getElementById('lunchBackdrop').style.display === 'flex') {
+    if (e.key === 'Escape' && isLunchModalOpen()) {
       window.__closeLunchModal();
+      return;
+    }
+
+    if (e.key === 'Tab' && isLunchModalOpen()) {
+      var modal = document.getElementById('lunchModal');
+      if (!modal) return;
+      var nodes = modal.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
+      var focusables = [];
+      for (var i = 0; i < nodes.length; i++) {
+        if (!nodes[i].disabled && nodes[i].offsetParent !== null) focusables.push(nodes[i]);
+      }
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
 })();
