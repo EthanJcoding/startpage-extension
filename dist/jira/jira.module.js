@@ -17,6 +17,7 @@ exports.JiraModule = JiraModule = __decorate([
     (0, common_1.Module)({
         providers: [jira_service_1.JiraService],
         controllers: [jira_controller_1.JiraController],
+        exports: [jira_service_1.JiraService],
     })
 ], JiraModule);
 //# sourceMappingURL=jira.module.js.map

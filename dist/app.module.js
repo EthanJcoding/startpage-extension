@@ -14,6 +14,7 @@ const jira_module_1 = require("./jira/jira.module");
 const github_module_1 = require("./github/github.module");
 const weather_module_1 = require("./weather/weather.module");
 const lunch_module_1 = require("./lunch/lunch.module");
+const plan_module_1 = require("./plan/plan.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -26,6 +27,7 @@ exports.AppModule = AppModule = __decorate([
             github_module_1.GithubModule,
             weather_module_1.WeatherModule,
             lunch_module_1.LunchModule,
+            plan_module_1.PlanModule,
         ],
     })
 ], AppModule);
