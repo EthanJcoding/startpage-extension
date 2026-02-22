@@ -1,9 +1,9 @@
-// Dev card: Jira + GitHub PR
+// Dev card: Jira + GitHub PR + Today plan
 (function() {
   var esc = App.esc;
   var api = App.api;
 
-  var devCache = { jira: null, 'my-pr': null, 'all-pr': null };
+  var devCache = { jira: null, 'my-pr': null, 'all-pr': null, plan: null };
   var currentDevTab = 'jira';
 
   function showDevLoading() {
@@ -71,9 +71,59 @@
     container.innerHTML = html;
   }
 
+  function sourceBadge(source) {
+    if (source === 'jira') return '<span class="text-[.65rem] font-semibold px-2 py-0.5 rounded-full bg-blu-dim text-blu">Jira</span>';
+    if (source === 'github') return '<span class="text-[.65rem] font-semibold px-2 py-0.5 rounded-full bg-grn-dim text-grn">PR</span>';
+    return '<span class="text-[.65rem] font-semibold px-2 py-0.5 rounded-full bg-org-dim text-org">Todo</span>';
+  }
+
+  function renderPlanBlock(title, items) {
+    var html = '<div class="rounded-lg border border-border bg-input/60 p-3.5">' +
+      '<div class="text-[.8rem] font-semibold text-txt-secondary mb-2.5">' + esc(title) + '</div>';
+
+    if (!items || !items.length) {
+      html += '<div class="text-[.8rem] text-txt-tertiary">추천 항목이 없습니다</div></div>';
+      return html;
+    }
+
+    html += '<div class="flex flex-col gap-2">';
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      html += '<div class="rounded-md bg-card border border-border/70 px-3 py-2.5">' +
+        '<div class="flex items-center justify-between gap-2">' +
+          '<div class="text-[.82rem] text-txt-primary font-medium truncate">' + esc(it.title || '') + '</div>' +
+          sourceBadge(it.source) +
+        '</div>' +
+        '<div class="mt-1 text-[.74rem] text-txt-secondary truncate">' + esc(it.subtitle || '') + '</div>' +
+        '<div class="mt-0.5 text-[.72rem] text-txt-tertiary">' + esc(it.reason || '') + '</div>' +
+      '</div>';
+    }
+    html += '</div></div>';
+    return html;
+  }
+
+  function renderPlan(plan) {
+    var container = document.getElementById('devContent');
+    var morning = plan && plan.morning ? plan.morning : [];
+    var afternoon = plan && plan.afternoon ? plan.afternoon : [];
+    document.getElementById('devCount').textContent = String(morning.length + afternoon.length);
+
+    var html = '<div class="flex flex-col gap-3">' +
+      renderPlanBlock('오전 Top 3', morning) +
+      renderPlanBlock('오후 Top 3', afternoon);
+
+    if (plan && plan.generatedAt) {
+      html += '<div class="text-[.72rem] text-txt-tertiary px-1">생성 시각: ' + esc(new Date(plan.generatedAt).toLocaleTimeString()) + '</div>';
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
   App.loadDevTab = async function(tab) {
     if (devCache[tab]) {
       if (tab === 'jira') renderJira(devCache[tab]);
+      else if (tab === 'plan') renderPlan(devCache[tab]);
       else renderPRs(devCache[tab]);
       return;
     }
@@ -85,6 +135,10 @@
         data = Array.isArray(data) ? data : data.issues || [];
         devCache.jira = data;
         renderJira(data);
+      } else if (tab === 'plan') {
+        data = await api('/api/plan/today');
+        devCache.plan = data || { morning: [], afternoon: [] };
+        renderPlan(devCache.plan);
       } else {
         var url = tab === 'my-pr' ? '/api/github/my-prs' : '/api/github/prs';
         data = await api(url);
@@ -93,7 +147,7 @@
         renderPRs(data);
       }
     } catch (e) {
-      var label = tab === 'jira' ? 'Jira' : 'GitHub PR';
+      var label = tab === 'jira' ? 'Jira' : (tab === 'plan' ? '실행 플랜' : 'GitHub PR');
       document.getElementById('devContent').innerHTML = '<div class="text-center py-6 px-5 text-accent text-[.85rem]">' + esc(label) + ' 연결 실패<br><button class="mt-2.5 bg-accent-dim text-accent border border-accent-dim px-4 py-1.5 rounded-md cursor-pointer text-[.8rem] font-sans transition-all duration-200 hover:bg-accent hover:text-white" onclick="window.__retryDev()">다시 시도</button></div>';
     }
   };

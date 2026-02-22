@@ -6,18 +6,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GithubModule = void 0;
+exports.PlanModule = void 0;
 const common_1 = require("@nestjs/common");
-const github_service_1 = require("./github.service");
-const github_controller_1 = require("./github.controller");
-let GithubModule = class GithubModule {
+const plan_controller_1 = require("./plan.controller");
+const plan_service_1 = require("./plan.service");
+const jira_module_1 = require("../jira/jira.module");
+const github_module_1 = require("../github/github.module");
+const todo_module_1 = require("../todo/todo.module");
+let PlanModule = class PlanModule {
 };
-exports.GithubModule = GithubModule;
-exports.GithubModule = GithubModule = __decorate([
+exports.PlanModule = PlanModule;
+exports.PlanModule = PlanModule = __decorate([
     (0, common_1.Module)({
-        providers: [github_service_1.GithubService],
-        controllers: [github_controller_1.GithubController],
-        exports: [github_service_1.GithubService],
+        imports: [jira_module_1.JiraModule, github_module_1.GithubModule, todo_module_1.TodoModule],
+        controllers: [plan_controller_1.PlanController],
+        providers: [plan_service_1.PlanService],
     })
-], GithubModule);
-//# sourceMappingURL=github.module.js.map
+], PlanModule);
+//# sourceMappingURL=plan.module.js.map

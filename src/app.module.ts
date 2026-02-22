@@ -5,6 +5,7 @@ import { JiraModule } from './jira/jira.module';
 import { GithubModule } from './github/github.module';
 import { WeatherModule } from './weather/weather.module';
 import { LunchModule } from './lunch/lunch.module';
+import { PlanModule } from './plan/plan.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { LunchModule } from './lunch/lunch.module';
     GithubModule,
     WeatherModule,
     LunchModule,
+    PlanModule,
   ],
 })
 export class AppModule {}
