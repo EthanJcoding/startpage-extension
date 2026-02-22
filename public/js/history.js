@@ -107,6 +107,11 @@
     document.getElementById('historyContent').classList.add('hidden');
     document.getElementById('historyEmpty').classList.add('hidden');
 
+    setTimeout(function() {
+      var closeBtn = document.querySelector('#historyBackdrop button[aria-label="기록 모달 닫기"]');
+      if (closeBtn) closeBtn.focus();
+    }, 0);
+
     try {
       historyData = await api('/api/todos/history');
       renderHistoryList();

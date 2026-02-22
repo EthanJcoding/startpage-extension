@@ -16,9 +16,9 @@
   function updateLunchTabStyles() {
     document.querySelectorAll('#lunchTabs .lunch-tab').forEach(function(btn) {
       if (btn.classList.contains('active')) {
-        btn.className = 'lunch-tab flex-1 py-1.5 px-2 border-none text-txt-primary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans bg-card-hover shadow-[0_1px_3px_rgba(0,0,0,.08)] active';
+        btn.className = 'focus-ring lunch-tab flex-1 py-1.5 px-2 border-none text-txt-primary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans bg-card-hover shadow-[0_1px_3px_rgba(0,0,0,.08)] active';
       } else {
-        btn.className = 'lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans hover:text-txt-secondary';
+        btn.className = 'focus-ring lunch-tab flex-1 py-1.5 px-2 border-none bg-transparent text-txt-tertiary text-[.78rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans hover:text-txt-secondary';
       }
     });
   }
@@ -357,16 +357,41 @@
     } catch (e) {}
   };
 
-  document.getElementById('lunchTabs').addEventListener('click', function(e) {
-    var btn = e.target.closest('.lunch-tab');
+  function activateLunchTab(btn) {
     if (!btn) return;
     var cat = btn.dataset.cat;
     if (cat === currentLunchCat) return;
     if (showingHidden) window.__toggleHiddenView();
-    document.querySelectorAll('#lunchTabs .lunch-tab').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('#lunchTabs .lunch-tab').forEach(function(b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+      b.tabIndex = -1;
+    });
     btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    btn.tabIndex = 0;
     updateLunchTabStyles();
     loadLunchRecommend(cat);
+  }
+
+  document.getElementById('lunchTabs').addEventListener('click', function(e) {
+    var btn = e.target.closest('.lunch-tab');
+    activateLunchTab(btn);
+  });
+
+  document.getElementById('lunchTabs').addEventListener('keydown', function(e) {
+    var tabs = Array.from(document.querySelectorAll('#lunchTabs .lunch-tab'));
+    var idx = tabs.indexOf(document.activeElement);
+    if (idx < 0) return;
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'Home' && e.key !== 'End') return;
+    e.preventDefault();
+    var next = idx;
+    if (e.key === 'ArrowRight') next = (idx + 1) % tabs.length;
+    if (e.key === 'ArrowLeft') next = (idx - 1 + tabs.length) % tabs.length;
+    if (e.key === 'Home') next = 0;
+    if (e.key === 'End') next = tabs.length - 1;
+    tabs[next].focus();
+    activateLunchTab(tabs[next]);
   });
 
   window.__openLunchModal = function() {
@@ -378,6 +403,10 @@
     document.getElementById('lunchTabs').style.pointerEvents = 'auto';
     document.getElementById('lunchBackdrop').style.display = 'flex';
     updateLunchTabStyles();
+    setTimeout(function() {
+      var activeTab = document.querySelector('#lunchTabs .lunch-tab.active');
+      if (activeTab) activeTab.focus();
+    }, 0);
     Promise.all([loadLunchReviews(), loadLunchHidden()]).then(function() { loadLunchRecommend(currentLunchCat); });
   };
 
@@ -510,8 +539,13 @@
   };
 
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && document.getElementById('lunchBackdrop').style.display === 'flex') {
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('lunchBackdrop').style.display === 'flex') {
       window.__closeLunchModal();
+      return;
+    }
+    if (document.getElementById('historyBackdrop').style.display === 'flex') {
+      window.__closeHistoryModal();
     }
   });
 })();
