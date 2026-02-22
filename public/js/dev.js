@@ -102,23 +102,48 @@
   function updateDevTabStyles() {
     document.querySelectorAll('#devTabs .dev-tab').forEach(function(btn) {
       if (btn.classList.contains('active')) {
-        btn.className = 'dev-tab flex-1 py-2 px-4 border-none text-txt-primary text-[.82rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans bg-card-hover shadow-[0_1px_3px_rgba(0,0,0,.08)] active';
+        btn.className = 'focus-ring dev-tab flex-1 py-2 px-4 border-none text-txt-primary text-[.82rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans bg-card-hover shadow-[0_1px_3px_rgba(0,0,0,.08)] active';
       } else {
-        btn.className = 'dev-tab flex-1 py-2 px-4 border-none bg-transparent text-txt-tertiary text-[.82rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans hover:text-txt-secondary';
+        btn.className = 'focus-ring dev-tab flex-1 py-2 px-4 border-none bg-transparent text-txt-tertiary text-[.82rem] font-medium cursor-pointer rounded-md transition-all duration-200 font-sans hover:text-txt-secondary';
       }
     });
   }
   updateDevTabStyles();
 
-  document.getElementById('devTabs').addEventListener('click', function(e) {
-    var btn = e.target.closest('.dev-tab');
+  function activateTab(btn) {
     if (!btn) return;
     var tab = btn.dataset.tab;
     if (tab === currentDevTab) return;
     currentDevTab = tab;
-    document.querySelectorAll('#devTabs .dev-tab').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('#devTabs .dev-tab').forEach(function(b) {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+      b.tabIndex = -1;
+    });
     btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    btn.tabIndex = 0;
     updateDevTabStyles();
     App.loadDevTab(tab);
+  }
+
+  document.getElementById('devTabs').addEventListener('click', function(e) {
+    var btn = e.target.closest('.dev-tab');
+    activateTab(btn);
+  });
+
+  document.getElementById('devTabs').addEventListener('keydown', function(e) {
+    var tabs = Array.from(document.querySelectorAll('#devTabs .dev-tab'));
+    var idx = tabs.indexOf(document.activeElement);
+    if (idx < 0) return;
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'Home' && e.key !== 'End') return;
+    e.preventDefault();
+    var next = idx;
+    if (e.key === 'ArrowRight') next = (idx + 1) % tabs.length;
+    if (e.key === 'ArrowLeft') next = (idx - 1 + tabs.length) % tabs.length;
+    if (e.key === 'Home') next = 0;
+    if (e.key === 'End') next = tabs.length - 1;
+    tabs[next].focus();
+    activateTab(tabs[next]);
   });
 })();
