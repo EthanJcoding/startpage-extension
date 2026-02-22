@@ -71,3 +71,7 @@ Required in `.env`: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJE
 - Tailwind uses a custom color palette defined in `index.html` `<script>` block: `deep`, `base`, `card`, `accent` (red), `blu`, `grn`, `org`, `yel`, `gry`, `txt-primary`/`secondary`/`tertiary`
 - Frontend uses IIFE pattern for module encapsulation, var declarations (no let/const), no module bundler
 - TypeScript is lenient: `strictNullChecks: false`, `noImplicitAny: false`
+
+## PR 작성 가이드
+
+- PR 설명(본문)은 한국어로 작성합니다.
