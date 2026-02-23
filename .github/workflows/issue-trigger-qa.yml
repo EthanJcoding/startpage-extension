@@ -1,0 +1,136 @@
+name: Issue Trigger QA
+
+on:
+  issues:
+    types: [opened, reopened, labeled]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  prepare-issue-branch:
+    name: Prepare issue branch for AI work
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create or find related branch
+        id: prep
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map((l) => l.name);
+            const requiredLabel = 'ai-ready';
+
+            if (!labels.includes(requiredLabel)) {
+              core.notice(`Skip: missing '${requiredLabel}' label on issue #${issue.number}.`);
+              core.setOutput('skipped', 'true');
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const repoInfo = await github.rest.repos.get({ owner, repo });
+            const defaultBranch = repoInfo.data.default_branch;
+
+            const titleSlug = issue.title
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '')
+              .slice(0, 40) || 'task';
+
+            const branchName = `codex/issue-${issue.number}-${titleSlug}`;
+
+            // 1) If an open PR already references this issue, reuse that branch.
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const linkedPR = prs.find((pr) => {
+              const text = `${pr.title}\n${pr.body || ''}`;
+              return text.includes(`#${issue.number}`);
+            });
+
+            let finalBranch = branchName;
+            let created = false;
+
+            if (linkedPR) {
+              finalBranch = linkedPR.head.ref;
+              core.notice(`Reuse existing PR branch: ${finalBranch}`);
+            } else {
+              // 2) Create branch if it does not exist.
+              try {
+                await github.rest.repos.getBranch({ owner, repo, branch: branchName });
+                core.notice(`Branch already exists: ${branchName}`);
+              } catch (e) {
+                if (e.status !== 404) throw e;
+
+                const base = await github.rest.repos.getBranch({
+                  owner,
+                  repo,
+                  branch: defaultBranch,
+                });
+
+                await github.rest.git.createRef({
+                  owner,
+                  repo,
+                  ref: `refs/heads/${branchName}`,
+                  sha: base.data.commit.sha,
+                });
+
+                created = true;
+                core.notice(`Created branch: ${branchName}`);
+              }
+            }
+
+            core.setOutput('skipped', 'false');
+            core.setOutput('branch', finalBranch);
+            core.setOutput('default_branch', defaultBranch);
+            core.setOutput('created', String(created));
+
+      - name: Comment issue with branch info
+        if: steps.prep.outputs.skipped != 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const branch = `${{ steps.prep.outputs.branch }}`;
+            const base = `${{ steps.prep.outputs.default_branch }}`;
+            const created = `${{ steps.prep.outputs.created }}` === 'true';
+
+            const createdMsg = created
+              ? `- Created branch: \`${branch}\``
+              : `- Reusing branch: \`${branch}\``;
+
+            const body = [
+              'AI issue worker is ready.',
+              '',
+              createdMsg,
+              `- Base branch: \`${base}\``,
+              '',
+              'Next step: run your implementation workflow (or local Codex run) against this branch and open/update a PR linked to this issue.',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: issue.number,
+              body,
+            });
+
+      - name: Hook for AI implementation runner
+        if: steps.prep.outputs.skipped != 'true'
+        run: |
+          echo "Branch prepared: ${{ steps.prep.outputs.branch }}"
+          echo "Connect your Codex/LLM runner here (checkout branch, implement issue, open/update PR)."
