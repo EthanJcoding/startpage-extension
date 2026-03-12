@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import { SettingsService } from '../settings/settings.service';
 export interface PullRequest {
     number: number;
     title: string;
@@ -9,12 +10,14 @@ export interface PullRequest {
 }
 export declare class GithubService {
     private configService;
-    private readonly token;
-    private readonly org;
-    private readonly repo;
+    private settingsService;
     private readonly apiBase;
-    constructor(configService: ConfigService);
-    private get headers();
+    private readonly fallbackToken;
+    private readonly fallbackOrg;
+    private readonly fallbackRepo;
+    constructor(configService: ConfigService, settingsService: SettingsService);
+    private getConfig;
+    private headers;
     getPullRequests(): Promise<PullRequest[]>;
     getMyPullRequests(): Promise<PullRequest[]>;
 }

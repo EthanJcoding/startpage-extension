@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import { SettingsService } from '../settings/settings.service';
 export interface JiraIssue {
     key: string;
     summary: string;
@@ -7,9 +8,11 @@ export interface JiraIssue {
 }
 export declare class JiraService {
     private configService;
-    private readonly baseUrl;
-    private readonly authHeader;
-    private readonly projectKey;
-    constructor(configService: ConfigService);
+    private settingsService;
+    private readonly fallbackBaseUrl;
+    private readonly fallbackAuthHeader;
+    private readonly fallbackProjectKey;
+    constructor(configService: ConfigService, settingsService: SettingsService);
+    private getConfig;
     getMyIssues(): Promise<JiraIssue[]>;
 }

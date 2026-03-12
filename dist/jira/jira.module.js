@@ -10,11 +10,13 @@ exports.JiraModule = void 0;
 const common_1 = require("@nestjs/common");
 const jira_service_1 = require("./jira.service");
 const jira_controller_1 = require("./jira.controller");
+const settings_module_1 = require("../settings/settings.module");
 let JiraModule = class JiraModule {
 };
 exports.JiraModule = JiraModule;
 exports.JiraModule = JiraModule = __decorate([
     (0, common_1.Module)({
+        imports: [settings_module_1.SettingsModule],
         providers: [jira_service_1.JiraService],
         controllers: [jira_controller_1.JiraController],
         exports: [jira_service_1.JiraService],

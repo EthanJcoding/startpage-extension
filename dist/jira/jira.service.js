@@ -12,22 +12,41 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JiraService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const settings_service_1 = require("../settings/settings.service");
 const axios_1 = require("axios");
 let JiraService = class JiraService {
-    constructor(configService) {
+    constructor(configService, settingsService) {
         this.configService = configService;
-        this.baseUrl = this.configService.get('JIRA_BASE_URL') || '';
+        this.settingsService = settingsService;
+        this.fallbackBaseUrl = this.configService.get('JIRA_BASE_URL') || '';
         const email = this.configService.get('JIRA_EMAIL') || '';
         const token = this.configService.get('JIRA_API_TOKEN') || '';
-        this.authHeader = `Basic ${Buffer.from(`${email}:${token}`).toString('base64')}`;
-        this.projectKey = this.configService.get('JIRA_PROJECT_KEY') || '';
+        this.fallbackAuthHeader = `Basic ${Buffer.from(`${email}:${token}`).toString('base64')}`;
+        this.fallbackProjectKey = this.configService.get('JIRA_PROJECT_KEY') || '';
+    }
+    async getConfig() {
+        const settings = await this.settingsService.getSettings();
+        const jira = settings.jira;
+        if (jira.baseUrl && jira.email && jira.apiToken) {
+            return {
+                baseUrl: jira.baseUrl,
+                authHeader: `Basic ${Buffer.from(`${jira.email}:${jira.apiToken}`).toString('base64')}`,
+                projectKey: jira.projectKey || this.fallbackProjectKey,
+            };
+        }
+        return {
+            baseUrl: this.fallbackBaseUrl,
+            authHeader: this.fallbackAuthHeader,
+            projectKey: this.fallbackProjectKey,
+        };
     }
     async getMyIssues() {
         try {
-            const jql = `project = ${this.projectKey} AND assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC`;
-            const response = await axios_1.default.get(`${this.baseUrl}/rest/api/3/search/jql`, {
+            const config = await this.getConfig();
+            const jql = `project = ${config.projectKey} AND assignee = currentUser() AND statusCategory != Done ORDER BY updated DESC`;
+            const response = await axios_1.default.get(`${config.baseUrl}/rest/api/3/search/jql`, {
                 headers: {
-                    Authorization: this.authHeader,
+                    Authorization: config.authHeader,
                     Accept: 'application/json',
                 },
                 params: {
@@ -52,6 +71,7 @@ let JiraService = class JiraService {
 exports.JiraService = JiraService;
 exports.JiraService = JiraService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService])
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        settings_service_1.SettingsService])
 ], JiraService);
 //# sourceMappingURL=jira.service.js.map

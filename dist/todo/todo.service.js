@@ -217,6 +217,16 @@ let TodoService = class TodoService {
         const updated = this.parseTodos(await (0, promises_1.readFile)(fp, 'utf-8'));
         return { date, ...updated };
     }
+    async updateTodoText(oldText, newText, section) {
+        const todos = await this.getTodos();
+        const list = section === 'inProgress' ? todos.inProgress : todos.done;
+        const todo = list.find((t) => t.text === oldText);
+        if (todo) {
+            todo.text = newText;
+        }
+        await (0, promises_1.writeFile)(this.filePath, this.serialize(todos), 'utf-8');
+        return this.getTodos();
+    }
     async deleteTodo(text, section) {
         const todos = await this.getTodos();
         if (section === 'inProgress') {

@@ -20,6 +20,7 @@ export declare class TodoController {
     addTodo(text: string, time?: string, duration?: string): Promise<import("./todo.service").TodoResult>;
     completeTodo(text: string): Promise<import("./todo.service").TodoResult>;
     updateTodoDuration(text: string, section: 'inProgress' | 'done', duration: string): Promise<import("./todo.service").TodoResult>;
+    updateTodoText(oldText: string, newText: string, section: 'inProgress' | 'done'): Promise<import("./todo.service").TodoResult>;
     updateTodoTime(text: string, section: 'inProgress' | 'done', time?: string): Promise<import("./todo.service").TodoResult>;
     deleteTodo(text: string, section: 'inProgress' | 'done'): Promise<import("./todo.service").TodoResult>;
 }

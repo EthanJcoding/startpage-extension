@@ -12,25 +12,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GithubService = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const settings_service_1 = require("../settings/settings.service");
 const axios_1 = require("axios");
 let GithubService = class GithubService {
-    constructor(configService) {
+    constructor(configService, settingsService) {
         this.configService = configService;
+        this.settingsService = settingsService;
         this.apiBase = 'https://api.github.com';
-        this.token = this.configService.get('GITHUB_TOKEN') || '';
-        this.org = this.configService.get('GITHUB_ORG') || '';
-        this.repo = this.configService.get('GITHUB_REPO') || '';
+        this.fallbackToken = this.configService.get('GITHUB_TOKEN') || '';
+        this.fallbackOrg = this.configService.get('GITHUB_ORG') || '';
+        this.fallbackRepo = this.configService.get('GITHUB_REPO') || '';
     }
-    get headers() {
+    async getConfig() {
+        const settings = await this.settingsService.getSettings();
+        const gh = settings.github;
         return {
-            Authorization: `Bearer ${this.token}`,
+            token: gh.token || this.fallbackToken,
+            org: gh.org || this.fallbackOrg,
+            repo: gh.repo || this.fallbackRepo,
+        };
+    }
+    headers(token) {
+        return {
+            Authorization: `Bearer ${token}`,
             Accept: 'application/vnd.github+json',
         };
     }
     async getPullRequests() {
         try {
-            const response = await axios_1.default.get(`${this.apiBase}/repos/${this.org}/${this.repo}/pulls`, {
-                headers: this.headers,
+            const config = await this.getConfig();
+            const response = await axios_1.default.get(`${this.apiBase}/repos/${config.org}/${config.repo}/pulls`, {
+                headers: this.headers(config.token),
                 params: { state: 'open', per_page: 10 },
             });
             return response.data.map((pr) => ({
@@ -48,8 +60,9 @@ let GithubService = class GithubService {
     }
     async getMyPullRequests() {
         try {
+            const config = await this.getConfig();
             const userResponse = await axios_1.default.get(`${this.apiBase}/user`, {
-                headers: this.headers,
+                headers: this.headers(config.token),
             });
             const username = userResponse.data.login;
             const allPrs = await this.getPullRequests();
@@ -63,6 +76,7 @@ let GithubService = class GithubService {
 exports.GithubService = GithubService;
 exports.GithubService = GithubService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService])
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        settings_service_1.SettingsService])
 ], GithubService);
 //# sourceMappingURL=github.service.js.map
