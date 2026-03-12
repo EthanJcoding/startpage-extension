@@ -43,6 +43,9 @@ let TodoController = class TodoController {
     updateTodoDuration(text, section, duration) {
         return this.todoService.updateTodoDuration(text, section, duration);
     }
+    updateTodoText(oldText, newText, section) {
+        return this.todoService.updateTodoText(oldText, newText, section);
+    }
     updateTodoTime(text, section, time) {
         return this.todoService.updateTodoTime(text, section, time);
     }
@@ -112,6 +115,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", void 0)
 ], TodoController.prototype, "updateTodoDuration", null);
+__decorate([
+    (0, common_1.Patch)('text'),
+    __param(0, (0, common_1.Body)('oldText')),
+    __param(1, (0, common_1.Body)('newText')),
+    __param(2, (0, common_1.Body)('section')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", void 0)
+], TodoController.prototype, "updateTodoText", null);
 __decorate([
     (0, common_1.Patch)('time'),
     __param(0, (0, common_1.Body)('text')),

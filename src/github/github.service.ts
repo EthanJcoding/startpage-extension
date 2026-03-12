@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SettingsService } from '../settings/settings.service';
 import axios from 'axios';
 
 export interface PullRequest {
@@ -13,30 +14,44 @@ export interface PullRequest {
 
 @Injectable()
 export class GithubService {
-  private readonly token: string;
-  private readonly org: string;
-  private readonly repo: string;
   private readonly apiBase = 'https://api.github.com';
+  private readonly fallbackToken: string;
+  private readonly fallbackOrg: string;
+  private readonly fallbackRepo: string;
 
-  constructor(private configService: ConfigService) {
-    this.token = this.configService.get<string>('GITHUB_TOKEN') || '';
-    this.org = this.configService.get<string>('GITHUB_ORG') || '';
-    this.repo = this.configService.get<string>('GITHUB_REPO') || '';
+  constructor(
+    private configService: ConfigService,
+    private settingsService: SettingsService,
+  ) {
+    this.fallbackToken = this.configService.get<string>('GITHUB_TOKEN') || '';
+    this.fallbackOrg = this.configService.get<string>('GITHUB_ORG') || '';
+    this.fallbackRepo = this.configService.get<string>('GITHUB_REPO') || '';
   }
 
-  private get headers() {
+  private async getConfig() {
+    const settings = await this.settingsService.getSettings();
+    const gh = settings.github;
     return {
-      Authorization: `Bearer ${this.token}`,
+      token: gh.token || this.fallbackToken,
+      org: gh.org || this.fallbackOrg,
+      repo: gh.repo || this.fallbackRepo,
+    };
+  }
+
+  private headers(token: string) {
+    return {
+      Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json',
     };
   }
 
   async getPullRequests(): Promise<PullRequest[]> {
     try {
+      const config = await this.getConfig();
       const response = await axios.get(
-        `${this.apiBase}/repos/${this.org}/${this.repo}/pulls`,
+        `${this.apiBase}/repos/${config.org}/${config.repo}/pulls`,
         {
-          headers: this.headers,
+          headers: this.headers(config.token),
           params: { state: 'open', per_page: 10 },
         },
       );
@@ -56,8 +71,9 @@ export class GithubService {
 
   async getMyPullRequests(): Promise<PullRequest[]> {
     try {
+      const config = await this.getConfig();
       const userResponse = await axios.get(`${this.apiBase}/user`, {
-        headers: this.headers,
+        headers: this.headers(config.token),
       });
       const username = userResponse.data.login;
 

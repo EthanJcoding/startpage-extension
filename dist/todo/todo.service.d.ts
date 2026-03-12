@@ -39,5 +39,6 @@ export declare class TodoService {
     deleteTodoByDate(date: string, text: string, section: 'inProgress' | 'done'): Promise<TodoResult & {
         date: string;
     }>;
+    updateTodoText(oldText: string, newText: string, section: 'inProgress' | 'done'): Promise<TodoResult>;
     deleteTodo(text: string, section: 'inProgress' | 'done'): Promise<TodoResult>;
 }

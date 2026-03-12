@@ -238,6 +238,21 @@ export class TodoService {
     return { date, ...updated };
   }
 
+  async updateTodoText(
+    oldText: string,
+    newText: string,
+    section: 'inProgress' | 'done',
+  ): Promise<TodoResult> {
+    const todos = await this.getTodos();
+    const list = section === 'inProgress' ? todos.inProgress : todos.done;
+    const todo = list.find((t) => t.text === oldText);
+    if (todo) {
+      todo.text = newText;
+    }
+    await writeFile(this.filePath, this.serialize(todos), 'utf-8');
+    return this.getTodos();
+  }
+
   async deleteTodo(text: string, section: 'inProgress' | 'done'): Promise<TodoResult> {
     const todos = await this.getTodos();
     if (section === 'inProgress') {

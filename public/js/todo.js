@@ -65,7 +65,7 @@
       return '<div' + dragAttrs(it) + ' class="group h-full rounded-lg overflow-hidden flex flex-col justify-center px-2.5 py-1.5 transition-colors duration-150 bg-grn-dim/60 border border-grn/15 hover:bg-grn-dim cursor-grab active:cursor-grabbing">' +
         '<div class="flex items-center gap-2 min-w-0">' +
           '<button class="w-[14px] h-[14px] rounded-[3px] flex items-center justify-center shrink-0 p-0 text-[8px] bg-grn border-[1.5px] border-grn text-white cursor-default" data-no-drag>✓</button>' +
-          '<span class="flex-1 text-[.78rem] text-grn/50 line-through leading-tight truncate">' + esc(it.text) + '</span>' +
+          '<span class="flex-1 text-[.78rem] text-grn/50 line-through leading-tight truncate" data-edit-text="' + esc(it.text) + '" data-edit-section="done">' + esc(it.text) + '</span>' +
           '<button class="opacity-0 group-hover:opacity-100 w-4 h-4 border-none bg-transparent text-grn/30 cursor-pointer rounded flex items-center justify-center transition-all duration-200 text-[9px] shrink-0 p-0 hover:text-accent" data-no-drag onclick="window.__deleteTodo(\'' + escTodoText(it.text) + '\',\'done\')">✕</button>' +
         '</div>' +
         '<span class="text-[.6rem] tabular-nums text-grn/35 mt-0.5 line-through">' + esc(it.time) + ' – ' + esc(end) + '</span>' +
@@ -74,7 +74,7 @@
     return '<div' + dragAttrs(it) + ' class="group h-full rounded-lg overflow-hidden flex flex-col justify-center px-2.5 py-1.5 transition-colors duration-150 bg-blu-dim border border-blu/15 hover:border-blu/30 cursor-grab active:cursor-grabbing">' +
       '<div class="flex items-center gap-2 min-w-0">' +
         '<button class="w-[14px] h-[14px] border-[1.5px] border-blu/30 rounded-[3px] cursor-pointer flex items-center justify-center transition-all duration-200 shrink-0 bg-transparent p-0 text-transparent text-[8px] hover:border-accent hover:bg-accent-dim" data-no-drag onclick="window.__completeTodo(\'' + escTodoText(it.text) + '\')">✓</button>' +
-        '<span class="flex-1 text-[.78rem] text-txt-primary leading-tight truncate font-medium">' + esc(it.text) + '</span>' +
+        '<span class="flex-1 text-[.78rem] text-txt-primary leading-tight truncate font-medium" data-edit-text="' + esc(it.text) + '" data-edit-section="inProgress">' + esc(it.text) + '</span>' +
         '<button class="opacity-0 group-hover:opacity-100 w-4 h-4 border-none bg-transparent text-txt-tertiary cursor-pointer rounded flex items-center justify-center transition-all duration-200 text-[9px] shrink-0 p-0 hover:text-accent" data-no-drag onclick="window.__deleteTodo(\'' + escTodoText(it.text) + '\',\'inProgress\')">✕</button>' +
       '</div>' +
       '<span class="text-[.6rem] tabular-nums text-blu/60 mt-0.5">' + esc(it.time) + ' – ' + esc(end) + '</span>' +
@@ -86,14 +86,14 @@
     if (it.done) {
       return '<div' + dragAttrs(it) + ' class="group flex items-center gap-2.5 py-[5px] px-2.5 rounded-lg transition-colors duration-150 bg-grn-dim/50 hover:bg-grn-dim cursor-grab active:cursor-grabbing">' +
         '<button class="w-[14px] h-[14px] rounded-[3px] flex items-center justify-center shrink-0 p-0 text-[8px] bg-grn border-[1.5px] border-grn text-white cursor-default" data-no-drag>✓</button>' +
-        '<span class="flex-1 text-[.8rem] text-grn/50 line-through leading-snug">' + esc(it.text) + '</span>' +
+        '<span class="flex-1 text-[.8rem] text-grn/50 line-through leading-snug" data-edit-text="' + esc(it.text) + '" data-edit-section="done">' + esc(it.text) + '</span>' +
         (it.duration ? '<span class="text-[.68rem] tabular-nums text-grn/40 bg-grn-dim rounded px-1.5 py-0.5 border border-grn/10 shrink-0 line-through">' + formatDuration(it.duration) + '</span>' : '') +
         '<button class="opacity-0 group-hover:opacity-100 w-4 h-4 border-none bg-transparent text-grn/30 cursor-pointer rounded flex items-center justify-center transition-all duration-200 text-[9px] shrink-0 p-0 hover:text-accent" data-no-drag onclick="window.__deleteTodo(\'' + escTodoText(it.text) + '\',\'done\')">✕</button>' +
       '</div>';
     }
     return '<div' + dragAttrs(it) + ' class="group flex items-center gap-2.5 py-[5px] px-2.5 rounded-lg transition-colors duration-150 bg-input/80 border border-border/50 hover:bg-input cursor-grab active:cursor-grabbing">' +
       '<button class="w-[14px] h-[14px] border-[1.5px] border-border-h rounded-[3px] cursor-pointer flex items-center justify-center transition-all duration-200 shrink-0 bg-transparent p-0 text-transparent text-[8px] hover:border-accent hover:bg-accent-dim" data-no-drag onclick="window.__completeTodo(\'' + escTodoText(it.text) + '\')">✓</button>' +
-      '<span class="flex-1 text-[.8rem] text-txt-primary leading-snug">' + esc(it.text) + '</span>' +
+      '<span class="flex-1 text-[.8rem] text-txt-primary leading-snug" data-edit-text="' + esc(it.text) + '" data-edit-section="inProgress">' + esc(it.text) + '</span>' +
       durBadge +
       '<button class="opacity-0 group-hover:opacity-100 w-4 h-4 border-none bg-transparent text-txt-tertiary cursor-pointer rounded flex items-center justify-center transition-all duration-200 text-[9px] shrink-0 p-0 hover:text-accent" data-no-drag onclick="window.__deleteTodo(\'' + escTodoText(it.text) + '\',\'inProgress\')">✕</button>' +
     '</div>';
@@ -382,6 +382,48 @@
     if (newTime !== '') body.time = newTime;
     api('/api/todos/time', { method: 'PATCH', body: JSON.stringify(body) }).then(function() { App.loadTodos(); }).catch(function() { App.loadTodos(); });
   }
+
+  // Inline edit
+  window.__startEditTodo = function(spanEl, text, section) {
+    if (spanEl.querySelector('input')) return;
+    var original = text;
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.value = text;
+    input.className = 'w-full bg-transparent border-0 outline-none text-inherit font-inherit p-0 leading-tight caret-accent';
+    input.style.fontSize = 'inherit';
+    input.setAttribute('data-no-drag', '');
+    spanEl.textContent = '';
+    spanEl.appendChild(input);
+    input.focus();
+    input.select();
+
+    function save() {
+      var newText = input.value.trim();
+      if (!newText || newText === original) {
+        spanEl.textContent = original;
+        return;
+      }
+      spanEl.textContent = newText;
+      api('/api/todos/text', { method: 'PATCH', body: JSON.stringify({ oldText: original, newText: newText, section: section }) })
+        .then(function() { App.loadTodos(); })
+        .catch(function() { spanEl.textContent = original; });
+    }
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); save(); }
+      if (e.key === 'Escape') { e.preventDefault(); spanEl.textContent = original; }
+    });
+    input.addEventListener('blur', save);
+  };
+
+  document.getElementById('todoContent').addEventListener('dblclick', function(e) {
+    var span = e.target.closest('[data-edit-text]');
+    if (!span) return;
+    var text = span.getAttribute('data-edit-text');
+    var section = span.getAttribute('data-edit-section');
+    window.__startEditTodo(span, text, section);
+  });
 
   document.getElementById('todoContent').addEventListener('mousedown', startDrag);
   document.addEventListener('mousemove', moveDrag);

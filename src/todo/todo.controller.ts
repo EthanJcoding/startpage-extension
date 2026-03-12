@@ -53,6 +53,15 @@ export class TodoController {
     return this.todoService.updateTodoDuration(text, section, duration);
   }
 
+  @Patch('text')
+  updateTodoText(
+    @Body('oldText') oldText: string,
+    @Body('newText') newText: string,
+    @Body('section') section: 'inProgress' | 'done',
+  ) {
+    return this.todoService.updateTodoText(oldText, newText, section);
+  }
+
   @Patch('time')
   updateTodoTime(
     @Body('text') text: string,
